@@ -1,0 +1,12 @@
+---
+- hosts: all
+  vars:
+    description: "wordpress installation"
+    package_url: "https://wordpress.org/latest.tar.gz"
+    webroot: "/usr/share/nginx/html"
+    temp: "/tmp"
+  remote_user: root
+  tasks:
+  - unarchive: copy=no src="{{package_url}}" dest="{{temp}}"
+  - command: mv "{{temp}}/wordpress" "{{webroot}}/wp"
+  - copy: src="templates/wordp/wp-config.php" dest="{{webroot}}/wp/wp-config.php"

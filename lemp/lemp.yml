@@ -1,0 +1,32 @@
+---
+- hosts: all
+  vars:
+    description: "nginx, php installation"
+    webroot: "/usr/share/nginx/html"
+  remote_user: root
+  tasks:
+  - name: install the latest version of epel-release
+    yum:
+      name: epel-release, nginx, php-fpm, php-mysql
+      state: latest
+  - name: ensure php-fpm cgi.fix_pathinfo=0
+    lineinfile: dest=/etc/php.ini regexp='^(.*)cgi.fix_pathinfo=' line=cgi.fix_pathinfo=0
+  - copy: src="templates/nginx/nginx.conf" dest="/etc/nginx/nginx.conf"
+  - copy: src="templates/php/info.php" dest="{{webroot}}/info.php"
+  - name: ensure php-fpm.d user and group to nginx
+    lineinfile: dest=/etc/php-fpm.d/www.conf regexp='^(.*)user =' line='user = nginx'
+  - name: ensure php-fpm.d user and group to nginx
+    lineinfile: dest=/etc/php-fpm.d/www.conf regexp='^(.*)group =' line='group = nginx'
+    notify:
+      - restart php-fpm
+      - restart nginx
+  - name: enable
+    systemd:
+      name: nginx, php-fpm
+      enabled: yes
+      masked: no
+  handlers:
+    - name: restart php-fpm
+      service: name=php-fpm state=restarted
+    - name: restart nginx
+      service: name=nginx state=restarted
