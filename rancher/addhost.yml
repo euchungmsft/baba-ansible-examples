@@ -1,0 +1,19 @@
+#	get your valid token from add host menu
+#
+---
+- hosts: all
+  vars:
+    description: "add host"
+    hostip: <your node ip address>
+    hostname: <your node name>
+    reg_token: <registration token>
+    rancher_server: <your controller ip address with port>
+  remote_user: root
+  tasks:
+  - shell: |
+      docker run -e CATTLE_HOST_LABELS='hostip={{hostip}}&hostnm={{hostname}}' --rm --privileged \
+      -v /var/run/docker.sock:/var/run/docker.sock -v /var/lib/rancher:/var/lib/rancher rancher/agent:v1.2.5 \
+      http://{{rancher_server}}/v1/scripts/{{reg_token}}
+      exit 0
+    args:
+      executable: /bin/bash

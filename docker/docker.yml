@@ -1,0 +1,26 @@
+#
+# if you want to run rancher, check supported versions from
+#	http://rancher.com/docs/rancher/v1.6/en/hosts/
+---
+- hosts: all
+  vars:
+    description: "docker installation"
+    version: "17.03.x-ce"
+    version_url: "https://releases.rancher.com/install-docker/17.03.sh"
+  remote_user: root
+  tasks:
+  - file: path="/etc/docker" state=directory
+  - copy: src="templates/registry/daemon.json" dest="/etc/docker/daemon.json"
+  - yum: name="docker, docker-common, docker-selinux, docker-engine" state="absent"
+  - command: yum makecache fast
+  - yum: name="yum-utils" state="latest"
+  - command: yum-config-manager --add-repo "https://download.docker.com/linux/centos/docker-ce.repo"
+  - command: yum-config-manager --enable docker-ce-edge
+#  - yum: name="docker-ce" state="latest"
+  - shell: |
+      curl {{version_url}} | sh
+      exit 0
+    args:
+      executable: /bin/bash
+  - systemd: name="docker" enabled="yes" masked="no"
+  - service: name="docker" state="started"

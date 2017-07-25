@@ -1,0 +1,18 @@
+---
+- hosts: all
+  vars:
+    description: "RANCHER SERVER - SINGLE CONTAINER - EXTERNAL DATABASE"
+    db_addr: <RDS MySql address>
+    db_port: <port>
+    db_user: <db user>
+    db_pass: <db password>
+    db_name: <db name>
+  remote_user: root
+  tasks:
+  - shell: |
+      docker run -d --restart=unless-stopped -p 8080:8080 rancher/server \
+      --db-host {{db_addr}} --db-port {{db_port}} \
+      --db-user {{db_user}} --db-pass {{db_pass}} --db-name {{db_name}}
+      exit 0
+    args:
+      executable: /bin/bash

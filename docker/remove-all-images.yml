@@ -1,0 +1,13 @@
+---
+- hosts: all
+  vars:
+    description: "stop and remove all containers and images"
+  remote_user: root
+  tasks:
+  - shell: |
+      docker stop $(docker ps -a -q)
+      docker rm $(docker ps -a -q)
+      docker rmi $(docker images -q)
+      exit 0
+    args:
+      executable: /bin/bash

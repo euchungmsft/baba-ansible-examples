@@ -1,0 +1,7 @@
+---
+- hosts: all
+  vars:
+    description: "RANCHER SERVER - SINGLE CONTAINER (NON-HA)"
+  remote_user: root
+  tasks:
+  - command: docker run -d --restart=unless-stopped -p 8080:8080 rancher/server

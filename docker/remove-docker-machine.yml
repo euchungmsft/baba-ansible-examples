@@ -1,0 +1,7 @@
+---
+- hosts: all
+  vars:
+    description: "docker machine uninstallation"
+  remote_user: root
+  tasks:
+  - file: path="/tmp/docker-machine, /usr/local/bin/docker-machine" state=absent

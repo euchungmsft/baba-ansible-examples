@@ -1,0 +1,18 @@
+#
+# check the latest version from
+#	https://docs.docker.com/machine/install-machine/
+---
+- hosts: all
+  vars:
+    description: "docker machine installation"
+    version: "v0.12.1"
+  remote_user: root
+  tasks:
+  - shell: |
+      curl -L https://github.com/docker/machine/releases/download/{{version}}/docker-machine-`uname -s`-`uname -m` >/tmp/docker-machine &&
+      chmod +x /tmp/docker-machine &&
+      sudo cp /tmp/docker-machine /usr/local/bin/docker-machine
+      exit 0
+    args:
+      executable: /bin/bash
+  - command: docker-machine version

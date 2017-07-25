@@ -1,0 +1,13 @@
+---
+- hosts: all
+  vars:
+    description: "docker uninstallation"
+  remote_user: root
+  tasks:
+  - service: name="docker" state="stopped"
+  - systemd: name="docker" enabled="no" masked="no"
+  - yum: name="docker-ce" state="absent"
+  - command: yum-config-manager --disable docker-ce-edge
+  - yum: name="yum-utils" state="absent"
+  - yum: name="docker, docker-common, docker-selinux, docker-engine" state="absent"
+
