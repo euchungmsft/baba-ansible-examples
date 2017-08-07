@@ -1,0 +1,4 @@
+export ORACLE_HOME=/usr/lib/oracle/12.2/client64
+export ORACLE_SID=_ORACLE_SID_
+export PATH=$PATH:$ORACLE_HOME/bin
+export LD_LIBRARY_PATH=$ORACLE_HOME/lib:$LD_LIBRARY_PATH

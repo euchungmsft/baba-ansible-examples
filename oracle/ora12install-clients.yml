@@ -1,0 +1,72 @@
+#
+#
+---
+- hosts: all
+  vars:
+  vars_files:
+  - variables.yml
+
+  remote_user: root
+  tasks:
+
+  - name: download and install the rpms
+    shell: |
+
+      wget "{{url_prefix}}/oracle-instantclient12.2-basic-12.2.0.1.0-1.x86_64.rpm"
+      wget "{{url_prefix}}/oracle-instantclient12.2-devel-12.2.0.1.0-1.x86_64.rpm"
+      wget "{{url_prefix}}/oracle-instantclient12.2-jdbc-12.2.0.1.0-1.x86_64.rpm"
+      wget "{{url_prefix}}/oracle-instantclient12.2-odbc-12.2.0.1.0-1.x86_64.rpm"
+      wget "{{url_prefix}}/oracle-instantclient12.2-sqlplus-12.2.0.1.0-1.x86_64.rpm"
+      wget "{{url_prefix}}/oracle-instantclient12.2-tools-12.2.0.1.0-1.x86_64.rpm"
+
+      yum -y install oracle-instantclient12.2-basic-12.2.0.1.0-1.x86_64.rpm
+      yum -y install oracle-instantclient12.2-devel-12.2.0.1.0-1.x86_64.rpm
+      yum -y install oracle-instantclient12.2-jdbc-12.2.0.1.0-1.x86_64.rpm
+      yum -y install oracle-instantclient12.2-odbc-12.2.0.1.0-1.x86_64.rpm
+      yum -y install oracle-instantclient12.2-sqlplus-12.2.0.1.0-1.x86_64.rpm
+      yum -y install oracle-instantclient12.2-tools-12.2.0.1.0-1.x86_64.rpm
+
+      rm -rf oracle-instantclient12.2-basic-12.2.0.1.0-1.x86_64.rpm
+      rm -rf install oracle-instantclient12.2-devel-12.2.0.1.0-1.x86_64.rpm
+      rm -rf install oracle-instantclient12.2-jdbc-12.2.0.1.0-1.x86_64.rpm
+      rm -rf install oracle-instantclient12.2-odbc-12.2.0.1.0-1.x86_64.rpm
+      rm -rf install oracle-instantclient12.2-sqlplus-12.2.0.1.0-1.x86_64.rpm
+      rm -rf install oracle-instantclient12.2-tools-12.2.0.1.0-1.x86_64.rpm
+
+      exit 0
+
+    args:
+      executable: /bin/bash
+
+  - name: config ora
+    shell: |
+
+      rm -rf bashrc.txt tnsnames.ora
+
+      cat templates/oracle_client/bashrc.txt \
+        | sed -r 's/_ORACLE_SID_/{{ORACLE_SID}}/g' \
+        > bashrc.txt
+
+      cat templates/oracle_client/tnsnames.ora \
+        | sed -r 's/_ORACLE_SID_/{{ORACLE_SID}}/g' \
+        > tnsnames.ora
+
+      exit 0
+
+    args:
+      executable: /bin/bash
+      chdir: "{{current_path}}"
+    delegate_to: localhost
+
+  - copy: src="bashrc.txt" dest="~/bashrc.txt"
+  - copy: src="tnsnames.ora" dest="/usr/lib/oracle/12.2/client64/network/admin/tnsnames.ora"
+
+  - name: setting env variables
+    shell: |
+
+      cat bashrc.txt >> ~/.bashrc
+
+      exit 0
+
+    args:
+      executable: /bin/bash

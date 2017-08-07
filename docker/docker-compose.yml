@@ -1,0 +1,17 @@
+#
+# check the latest version from
+#	https://github.com/docker/compose/releases
+---
+- hosts: all
+  vars:
+    description: "docker compose installation"
+    version: "1.15.0"
+  remote_user: root
+  tasks:
+  - shell: |
+      curl -L curl -L https://github.com/docker/compose/releases/download/{{version}}/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose &&
+      chmod +x /usr/local/bin/docker-compose &&
+      exit 0
+    args:
+      executable: /bin/bash
+  - command: docker-compose --version

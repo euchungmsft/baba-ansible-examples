@@ -1,0 +1,24 @@
+#
+#
+---
+version: "12.1.0.2"
+
+current_path: "/root/works/baba-ansible-examples/oracle"
+docker_user: "[your user id on docker store]"
+docker_pass: "[your password forthe user id]"
+shm_size: "8g"
+container_name: "egora12"
+ora_port: 1521
+ora_emx_port: 5500
+data_volume: /home/data
+
+ORACLE_HOME: "/u01/app/oracle/product/12.1.0/dbhome_1"
+ORACLE_SID: "ORCL"
+SYSTEM_PASS: "[initial password for sa user]"
+WALLET_PASSWORD: "[password for the wallet (key store)]"
+TABLESPACE_NAME: "[new able space name]"
+ORA_USER: "[your oracle user id]"
+ORA_PASS: "[your password forthe user id]"
+
+current_path: "[path where you're working at on the controller node]"
+url_prefix: "[your url prefix where oracle client rpms are located]"

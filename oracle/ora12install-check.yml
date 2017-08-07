@@ -1,0 +1,12 @@
+# pip install docker-py
+#
+---
+- hosts: all
+  vars:
+  vars_files:
+  - variables.yml
+
+  remote_user: root
+  tasks:
+  - command: docker cp {{container_name}}:/home/oracle/setup/log/setupDB.log /tmp
+  - command: cat /tmp/setupDB.log

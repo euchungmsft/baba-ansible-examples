@@ -1,0 +1,64 @@
+#
+#
+---
+- hosts: all
+  vars:
+  vars_files:
+  - variables.yml
+
+  remote_user: root
+  tasks:
+
+  - name: init
+    shell: |
+
+      rm -rf oracle_env.txt sqlnet.ora orainit.sql
+
+      cat templates/oracle_install/oracle_env.txt \
+        | sed -r 's/_SYSTEM_PASS_/{{SYSTEM_PASS}}/g' \
+        | sed -r 's/_ORACLE_SID_/{{ORACLE_SID}}/g' \
+        > oracle_env.txt
+
+      cat templates/oracle_install/sqlnet.ora \
+        | sed -r 's/_ORACLE_SID_/{{ORACLE_SID}}/g' \
+        > sqlnet.ora
+
+      cat templates/oracle_install/orainit.sql \
+        | sed -r 's/_WALLET_PASSWORD_/{{WALLET_PASSWORD}}/g' \
+        | sed -r 's/_TABLESPACE_NAME_/{{TABLESPACE_NAME}}/g' \
+        | sed -r 's/_ORA_USER_/{{ORA_USER}}/g' \
+        | sed -r 's/_ORA_PASS_/{{ORA_PASS}}/g' \
+        > orainit.sql
+
+      exit 0
+
+    args:
+      executable: /bin/bash
+      chdir: "{{current_path}}"
+    delegate_to: localhost
+
+  - copy: src="oracle_env.txt" dest="~/oracle_env.txt"
+  - copy: src="sqlnet.ora" dest="~/sqlnet.ora"
+  - copy: src="orainit.sql" dest="~/orainit.sql"
+
+  - file: path={{data_volume}} state=absent
+  - file: path={{data_volume}} state=directory mode="u+rwx,g+rwx,o+rwx"
+  - file: path={{data_volume}}/{{TABLESPACE_NAME}} state=directory mode="u+rwx,g+rwx,o+rwx"
+
+  - shell: |
+
+      docker login -u {{docker_user}} -p {{docker_pass}}
+
+      docker pull store/oracle/database-enterprise:{{version}}
+
+      docker run -d --env-file ~/oracle_env.txt \
+      -p {{ora_port}}:1521 -p {{ora_emx_port}}:5500 \
+      -v {{data_volume}}:/data -it --name {{container_name}} \
+      --shm-size={{shm_size}} store/oracle/database-enterprise:{{version}}
+
+      exit 0
+
+    args:
+      executable: /bin/bash
+
+  - debug: msg="**** Container {{container_name}} launched. Make sure the installation done from /home/oracle/setup/log/setupDB.log in the container"

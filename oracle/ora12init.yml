@@ -1,0 +1,24 @@
+#
+#
+---
+- hosts: all
+  vars:
+  vars_files:
+  - variables.yml
+
+  remote_user: root
+  tasks:
+  - shell: |
+
+      docker cp ~/sqlnet.ora {{container_name}}:{{ORACLE_HOME}}/network/admin/sqlnet.ora
+
+      docker exec {{container_name}} /usr/bin/mkdir -p {{ORACLE_HOME}}/admin/{{ORACLE_SID}}/wallet
+
+      docker exec {{container_name}} chown -hR oracle {{ORACLE_HOME}}/admin/{{ORACLE_SID}}/wallet
+
+      docker exec -i {{container_name}} su oracle -l -c "{{ORACLE_HOME}}/bin/sqlplus / as sysdba" < orainit.sql
+
+      exit 0
+    args:
+      executable: /bin/bash
+  - debug: msg="**** Oracle running on {{container_name}} is now ready to use"

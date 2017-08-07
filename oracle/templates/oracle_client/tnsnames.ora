@@ -1,0 +1,17 @@
+_ORACLE_SID_ =  
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521))
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = _ORACLE_SID_.localdomain)  
+    )
+  )
+  
+PDB1 =   
+  (DESCRIPTION =     
+    (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521))     
+    (CONNECT_DATA =       
+      (SERVER = DEDICATED)       
+      (SERVICE_NAME = PDB1.localdomain)     
+    )   
+  )  
