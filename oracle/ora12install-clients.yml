@@ -3,13 +3,18 @@
 ---
 - hosts: all
   vars:
-  vars_files:
-  - variables.yml
+    description: "oracle database 12 installation"
+    version: "12.1.0.2"
+
+    current_path: "/root/works/baba-ansible-examples/oracle"
+    url_prefix: "http://eg-qdbck04.oss-ap-northeast-1.aliyuncs.com/"
+
+    ORACLE_SID: "ORCL"
 
   remote_user: root
   tasks:
 
-  - name: download and install the rpms
+  - name: 1
     shell: |
 
       wget "{{url_prefix}}/oracle-instantclient12.2-basic-12.2.0.1.0-1.x86_64.rpm"
@@ -33,12 +38,14 @@
       rm -rf install oracle-instantclient12.2-sqlplus-12.2.0.1.0-1.x86_64.rpm
       rm -rf install oracle-instantclient12.2-tools-12.2.0.1.0-1.x86_64.rpm
 
+      mkdir -p /usr/lib/oracle/12.2/client64/network/admin
+
       exit 0
 
     args:
       executable: /bin/bash
 
-  - name: config ora
+  - name:
     shell: |
 
       rm -rf bashrc.txt tnsnames.ora
@@ -61,7 +68,7 @@
   - copy: src="bashrc.txt" dest="~/bashrc.txt"
   - copy: src="tnsnames.ora" dest="/usr/lib/oracle/12.2/client64/network/admin/tnsnames.ora"
 
-  - name: setting env variables
+  - name:
     shell: |
 
       cat bashrc.txt >> ~/.bashrc
